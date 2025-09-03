@@ -1,0 +1,61 @@
+# ==============================
+# Visual Studio
+# ==============================
+.vs/
+*.user
+*.suo
+*.userosscache
+*.userprefs
+
+# ==============================
+# Build results
+# ==============================
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+
+# ==============================
+# Visual Studio Code
+# ==============================
+.vscode/
+*.code-workspace
+
+# ==============================
+# NuGet
+# ==============================
+*.nupkg
+*.snupkg
+# NuGet Packages Folder
+packages/
+# Keep the build folder if using package restore
+!packages/build/
+
+# ==============================
+# Rider / JetBrains IDE
+# ==============================
+.idea/
+*.sln.iml
+
+# ==============================
+# Test Results
+# ==============================
+TestResult*/
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# ==============================
+# Other
+# ==============================
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.DS_Store
+*~
+*.bin
+*.om
+*.so
