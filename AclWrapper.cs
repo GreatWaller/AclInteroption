@@ -35,27 +35,42 @@ public class AclWrapper : IDisposable
             int ret = Native.Acl_Process(_handle, inputFiles, inputFiles.Length);
             if (ret != 0) throw new InvalidOperationException($"Acl_Process failed, ret={ret}");
         }
-
-        public void Dispose()
+        
+        public void Run(byte[] inputData)
         {
-            if (_disposed) return;
-
+            GCHandle pinned = GCHandle.Alloc(inputData, GCHandleType.Pinned);
             try
             {
-                if (_handle != IntPtr.Zero)
-                {
-                    // 释放底层资源（ACL、模型、缓冲）
-                    Native.Acl_DestroyResource(_handle);
-                    Native.Acl_Destroy(_handle);
-                }
+                IntPtr ptr = pinned.AddrOfPinnedObject();
+                if (Native.Acl_ProcessMemory(_handle, ptr, (UIntPtr)inputData.Length) != 0)
+                    throw new InvalidOperationException("Acl_ProcessMemory failed");
             }
             finally
             {
-                _handle = IntPtr.Zero;
-                _disposed = true;
-                GC.SuppressFinalize(this);
+                pinned.Free();
             }
         }
+
+        public void Dispose()
+    {
+        if (_disposed) return;
+
+        try
+        {
+            if (_handle != IntPtr.Zero)
+            {
+                // 释放底层资源（ACL、模型、缓冲）
+                Native.Acl_DestroyResource(_handle);
+                Native.Acl_Destroy(_handle);
+            }
+        }
+        finally
+        {
+            _handle = IntPtr.Zero;
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
+    }
         /// <summary>
         /// 获取推理输出（按 byte[] 返回）
         /// </summary>

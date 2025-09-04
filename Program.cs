@@ -9,6 +9,7 @@ internal class Program
         string aclConfigPath = "./acl.json";
         string modelPath = "./model/yolo11n.om";
         string[] inputFiles = { "./data/input_640.bin" };
+        string inputDataFile = "./data/input_640.bin";
 
         using var acl = new AclWrapper();
 
@@ -16,7 +17,9 @@ internal class Program
         acl.Init(0, aclConfigPath, modelPath);
 
         Console.WriteLine(">>> Run inference...");
-        acl.Run(inputFiles);
+        // acl.Run(inputFiles);
+        byte[] inputData = System.IO.File.ReadAllBytes(inputDataFile);
+        acl.Run(inputData);
 
         Console.WriteLine(">>> Fetch outputs...");
         var outputs = acl.GetOutput();

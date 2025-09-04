@@ -38,6 +38,8 @@ internal static class Native
         [In] string[] inputFiles,
         int fileCount
     );
+    [DllImport(LIB, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Acl_ProcessMemory")]
+        internal static extern int Acl_ProcessMemory(IntPtr obj, IntPtr inputData, UIntPtr size);
 
     [DllImport(LIB, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Acl_DestroyResource")]
     internal static extern void Acl_DestroyResource(IntPtr obj);
