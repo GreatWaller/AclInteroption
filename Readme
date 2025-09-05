@@ -1,0 +1,74 @@
+# AclInteroption
+
+AclInteroption 是一个基于 C# 的 Ascend 端侧模型推理 Demo，支持图片预处理、模型推理（调用 Ascend C/C++ 推理库）、YOLO 后处理等功能。适用于华为 Ascend 设备的模型部署与推理测试。
+
+## 目录结构
+
+```
+AclInteroption/
+├── Program.cs
+├── AclWrapper.cs
+├── Native.cs
+├── Preprocessor.cs
+├── YoloPostProcessor.cs
+├── acl.json
+├── libaclwrapper.so
+├── data/
+│   ├── dog1_1024_683.jpg
+│   ├── dog2_1024_683.jpg
+│   └── input_640.bin
+├── model/
+│   ├── yolo11n.om
+│   └── resnet50.om
+└── ...
+```
+
+## 依赖
+
+- .NET 8.0
+- OpenCvSharp4（用于图片预处理）
+- Ascend C/C++ 推理库（需提供 libaclwrapper.so）
+
+## 快速开始
+
+1. **准备模型和配置文件**
+   - 将 `.om` 模型文件放入 `model` 目录。
+   - 配置 `acl.json`。
+
+2. **准备输入图片**
+   - 将待推理图片放入 `data` 目录。
+
+3. **编译项目**
+   ```sh
+   dotnet build
+   ```
+
+4. **运行推理**
+   ```sh
+   dotnet run
+   ```
+
+## 主要功能
+
+- 图片预处理：支持 resize、归一化、格式转换（HWC→CHW）。
+- Ascend 推理：支持多种输入方式，调用底层 Ascend C 接口进行推理。
+- YOLO 后处理：支持检测框解析和 NMS。
+
+## 示例代码
+
+```csharp
+using var acl = new AclWrapper();
+acl.Init(0, "./acl.json", "./model/yolo11n.om");
+var mat = Preprocessor.PreprocessImageToMat("./data/dog1_1024_683.jpg", 640, 640);
+acl.Run(mat.Data, (int)mat.Total() * mat.ElemSize());
+var outputs = acl.GetOutput();
+var detections = YoloPostProcessor.PostProcess(outputs[0], numClasses: 80);
+foreach (var det in detections)
+{
+    Console.WriteLine($"Class {det.ClassId}, Conf {det.Confidence:F2}, Box=({det.X1:F1},{det.Y1:F1},{det.X2:F1},{det.Y2:F1})");
+}
+```
+
+## 参考
+
+- Ascend C/C++ 推理 API 文档
