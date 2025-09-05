@@ -50,6 +50,17 @@ public class AclWrapper : IDisposable
                 pinned.Free();
             }
         }
+        public void Run(IntPtr data, int length)
+        {
+            EnsureNotDisposed();
+            if (data == IntPtr.Zero || length <= 0)
+                throw new ArgumentException("Invalid data pointer or length.");
+
+            int ret = Native.Acl_ProcessMemory(_handle, data, (UIntPtr)length);
+            if (ret != 0)
+                throw new InvalidOperationException($"Acl_ProcessMemory failed, ret={ret}");
+        }
+
 
         public void Dispose()
     {
